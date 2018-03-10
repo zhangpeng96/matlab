@@ -60,35 +60,43 @@ while (iter <= maxCycle)
 			Param2Change = fix(rand * 2) + 1;
 			neighbour = FoodNumber + fix(rand * (NP - FoodNumber - SearchNumber)) + 1;
 
-		while (neighbour == t)
-			neighbour = FoodNumber + fix(rand * (NP - FoodNumber - SearchNumber)) + 1;
-		end
-		sol(t, :) = Foods(t, :);
-		sol(t, Param2Change) = Foods(i, Param2Change) + (Foods(i, Param2Change) - Foods(neighbour, Param2Change)) * (rand - 0.5) * 2;
+			while (neighbour == t)
+				neighbour = FoodNumber + fix(rand * (NP - FoodNumber - SearchNumber)) + 1;
+			end
 
-		if (sol(t, Param2Change)>10 | sol(t, Param2Change)<-10)
-			sol(t, Param2Change) = Foods(t, Param2Change);
-		end
+			sol(t, :) = Foods(t, :);
+			sol(t, Param2Change) = Foods(i, Param2Change) + (Foods(i, Param2Change) - Foods(neighbour, Param2Change)) * (rand - 0.5) * 2;
 
-		FitnessSol = (sin(sol(t, 1))./(sol(t,1) + eps)).*(sin(sol(t, 2))./(sol(t, 2) + eps));
+			if (sol(t, Param2Change)>10 | sol(t, Param2Change)<-10)
+				sol(t, Param2Change) = Foods(t, Param2Change);
+			end
 
-		if (FitnessSol > Fitness(t))
-			Foods(t, :) = sol(t, :);
-			Fitness(t) = FitnessSol;
-			trial(t) = 0;
-		else
-			trial(t) = trial(t) + 1;
-			if trial(t) > Limit
-				Foods(t, :) = (rand(1, 2) - 0.5) * 20;
+			FitnessSol = (sin(sol(t, 1))./(sol(t,1) + eps)).*(sin(sol(t, 2))./(sol(t, 2) + eps));
+
+			if (FitnessSol > Fitness(t))
+				Foods(t, :) = sol(t, :);
+				Fitness(t) = FitnessSol;
+				trial(t) = 0;
+			else
+				trial(t) = trial(t) + 1;
+				if trial(t) > Limit
+					Foods(t, :) = (rand(1, 2) - 0.5) * 20;
+				end
 			end
 		end
+		
+		i = i + 1;
+		if i == (FoodNumber + 1)
+			i = 1;
+		end
+	end
 	%%% Scout Bee %%%
 	for i = (NP - SearchNumber + 1) : NP
 		Foods(i, :) = (rand(1, 2) - 0.5) * 20;
 		Fitness(i) = (sin(Foods(i, 1))./(Foods(i, 1) + eps)).*(sin(Foods(i, 2))./(Foods(i, 2) + eps));
 	end
 
-	ind = find(Fitness = max(Fitness));
+	ind = find(Fitness == max(Fitness));
 	Max = Fitness(ind);
 	if (Max > Optimalvalue)
 		Optimalvalue = Max;
